@@ -22,9 +22,8 @@ const (
 )
 
 /* Types */
-// Ancillary struct to handle 'hooks' related info
-type logAncillary struct {
-  filterLevels map[int]int
+type jcLogrusAnc struct {
+  filtered byte
 }
 
 type JCLogrus struct {
@@ -34,24 +33,24 @@ type JCLogrus struct {
   OutputPath string
   Output interface {}
   logrus_ *logrus.Logger
-  ancillary *logAncillary
+  ancillary *jcLogrusAnc
 }
 
 /* Interface 'JCLogger' */
-func (bl *JCLogrus) SetLevel(level int) () {
+func (jl *JCLogrus) SetLevel(level int) () {
 
   /*
     Set logger level
   */
 
-  if (bl == nil) {
+  if (jl == nil) {
     return
   }
 
-  bl.logrus_.SetLevel(jcloggerLevelToLogrusLevel(level))
+  jl.logrus_.SetLevel(levelConversion(level))
 }
 
-func (bl *JCLogrus) SetTimeStamp(ts string) () {
+func (jl *JCLogrus) SetTimeStamp(ts string) () {
 
   /*
     Set logger time stamp
@@ -59,104 +58,174 @@ func (bl *JCLogrus) SetTimeStamp(ts string) () {
 
   var tf logrus.TextFormatter
 
-  if (bl == nil) {
+  if (jl == nil) {
     return
   }
 
   tf.FullTimestamp = true
   tf.TimestampFormat = ts
-  bl.logrus_.SetFormatter(&tf)
+  jl.logrus_.SetFormatter(&tf)
 }
 
-func (bl *JCLogrus) Close() () {
+func (jl *JCLogrus) Close() () {
 
   /*
     Close the logger
   */
 
-  if (bl == nil || bl.OutputType == JCLOG_CONSOLE) {
+  if (jl == nil || jl.OutputType == JCLOG_CONSOLE) {
     return
   }
 
-  if (bl.OutputType == JCLOG_FILE) {
-    ff, tt := bl.Output.(*os.File)
+  if (jl.OutputType == JCLOG_FILE) {
+    ff, tt := jl.Output.(*os.File)
     if (tt) {
       ff.Close()
     }
 
-    bl.logrus_ = nil
+    jl.logrus_ = nil
   }
 }
 
-func (bl *JCLogrus) FilterLevels(levels []int) () {
-  fmt.Println("filter levels")
+func (jl *JCLogrus) FilterLevel(level int) () {
+  /*
+    Log only this level (you may filter multiple levels)
+  */
+
+  if (jl == nil || LEVEL_STR[level] == "") {
+    return
+  }
+
+  if (jl.ancillary == nil) {
+    jl.ancillary = &jcLogrusAnc{}
+  }
+
+  jl.ancillary.filtered |= 1 << level
+}
+
+func (jl *JCLogrus) UnFilterLevel(level int) () {
+  /*
+    Log all levels
+  */
+
+  if (jl == nil || LEVEL_STR[level] == "") {
+    return
+  }
+
+  if (jl.ancillary == nil) {
+    return
+  }
+
+  jl.ancillary.filtered &= ^(1 << level)
 }
 
 // Log levels
-func (bl *JCLogrus) Trace(s string) () {
+func (jl *JCLogrus) Trace(s string) () {
 
-  if (bl == nil || bl.logrus_ == nil) {
+  if (jl == nil || jl.logrus_ == nil) {
     return
   }
 
-  bl.logrus_.Trace(s)
+  filterMe := jl.ancillary.filtered & (1 << LEVEL_TRACE)
+  if (jl.ancillary != nil) {
+    if (jl.ancillary.filtered != 0 && filterMe == 0) {
+        return
+    }
+  }
+
+  jl.logrus_.Trace(s)
 }
 
-func (bl *JCLogrus) Debug(s string) () {
+func (jl *JCLogrus) Debug(s string) () {
 
-  if (bl == nil || bl.logrus_ == nil) {
+  if (jl == nil || jl.logrus_ == nil) {
     return
   }
 
-  bl.logrus_.Debug(s)
+  filterMe := jl.ancillary.filtered & (1 << LEVEL_DEBUG)
+  if (jl.ancillary != nil) {
+    if (jl.ancillary.filtered != 0 && filterMe == 0) {
+        return
+    }
+  }
+
+  jl.logrus_.Debug(s)
 }
 
-func (bl *JCLogrus) Info(s string) () {
+func (jl *JCLogrus) Info(s string) () {
 
-  if (bl == nil || bl.logrus_ == nil) {
+  if (jl == nil || jl.logrus_ == nil) {
     return
   }
 
-  bl.logrus_.Info(s)
+  filterMe := jl.ancillary.filtered & (1 << LEVEL_INFO)
+  if (jl.ancillary != nil) {
+    if (jl.ancillary.filtered != 0 && filterMe == 0) {
+        return
+    }
+  }
+
+  jl.logrus_.Info(s)
 }
 
-func (bl *JCLogrus) Warning(s string) () {
+func (jl *JCLogrus) Warning(s string) () {
 
-  if (bl == nil || bl.logrus_ == nil) {
+  if (jl == nil || jl.logrus_ == nil) {
     return
   }
 
-  bl.logrus_.Warning(s)
+  filterMe := jl.ancillary.filtered & (1 << LEVEL_WARNING)
+  if (jl.ancillary != nil) {
+    if (jl.ancillary.filtered != 0 && filterMe == 0) {
+        return
+    }
+  }
+
+  jl.logrus_.Warning(s)
 }
 
-func (bl *JCLogrus) Error(s string) () {
+func (jl *JCLogrus) Error(s string) () {
 
-  if (bl == nil || bl.logrus_ == nil) {
+  if (jl == nil || jl.logrus_ == nil) {
     return
   }
 
-  bl.logrus_.Error(s)
+  filterMe := jl.ancillary.filtered & (1 << LEVEL_ERROR)
+  if (jl.ancillary != nil) {
+    if (jl.ancillary.filtered != 0 && filterMe == 0) {
+        return
+    }
+  }
+
+  jl.logrus_.Error(s)
 }
 
-func (bl *JCLogrus) Fatal(s string) () {
+func (jl *JCLogrus) Fatal(s string) () {
 
-  if (bl == nil || bl.logrus_ == nil) {
+  if (jl == nil || jl.logrus_ == nil) {
     return
   }
 
-  bl.logrus_.Fatal(s)
+  filterMe := jl.ancillary.filtered & (1 << LEVEL_FATAL)
+  if (jl.ancillary != nil) {
+    if (jl.ancillary.filtered != 0 && filterMe == 0) {
+        return
+    }
+  }
+
+  jl.logrus_.Fatal(s)
 }
 
 /* Interface 'stringer' */
-func (bl *JCLogrus) String() (string) {
+func (jl *JCLogrus) String() (string) {
 
-  if (bl.OutputType == JCLOG_CONSOLE) {
+  if (jl.OutputType == JCLOG_CONSOLE) {
     return fmt.Sprintf("%v(%v) | %v",
-      LEVEL_STR[bl.Level], bl.Level, bl.TimeStamp)
+      LEVEL_STR[jl.Level], jl.Level, jl.TimeStamp)
   }
 
   return fmt.Sprintf("%v(%v) | %v\nPath: %v",
-    LEVEL_STR[bl.Level],bl.Level, bl.TimeStamp, bl.OutputPath)
+    LEVEL_STR[jl.Level], jl.Level, jl.TimeStamp, jl.OutputPath)
 }
 
 /* Functions */
@@ -192,7 +261,7 @@ func CreateLogger(outputType int, outputPath string) (*JCLogrus, error) {
       return nil, err
     }
 
-    jcgrus.logrus_.SetLevel(jcloggerLevelToLogrusLevel(jcgrus.Level))
+    jcgrus.logrus_.SetLevel(levelConversion(jcgrus.Level))
     jcgrus.logrus_.SetOutput(ff)
     jcgrus.Output = ff
     jcgrus.SetTimeStamp(jcgrus.TimeStamp)
@@ -257,7 +326,7 @@ func readTimeStamp() (string) {
   return JCLOGRUS_DEFAULT_FORMAT
 }
 
-func jcloggerLevelToLogrusLevel(level int) (logrus.Level) {
+func levelConversion(level int) (logrus.Level) {
 
   /*
     Conversion 'JCLogger' level to 'logrus' level
