@@ -88,6 +88,7 @@ func (jl *JCLogrus) Close() () {
 }
 
 func (jl *JCLogrus) FilterLevel(level int) () {
+
   /*
     Log only this level (you may filter multiple levels)
   */
@@ -104,8 +105,9 @@ func (jl *JCLogrus) FilterLevel(level int) () {
 }
 
 func (jl *JCLogrus) UnFilterLevel(level int) () {
+
   /*
-    Log all levels
+    Disable this filter
   */
 
   if (jl == nil || LEVEL_STR[level] == "") {
