@@ -128,8 +128,8 @@ func (jl *JCLogrus) Trace(s string) () {
     return
   }
 
-  filterMe := jl.ancillary.filtered & (1 << LEVEL_TRACE)
   if (jl.ancillary != nil) {
+    filterMe := jl.ancillary.filtered & (1 << LEVEL_TRACE)
     if (jl.ancillary.filtered != 0 && filterMe == 0) {
         return
     }
@@ -144,8 +144,8 @@ func (jl *JCLogrus) Debug(s string) () {
     return
   }
 
-  filterMe := jl.ancillary.filtered & (1 << LEVEL_DEBUG)
   if (jl.ancillary != nil) {
+    filterMe := jl.ancillary.filtered & (1 << LEVEL_DEBUG)
     if (jl.ancillary.filtered != 0 && filterMe == 0) {
         return
     }
@@ -160,8 +160,8 @@ func (jl *JCLogrus) Info(s string) () {
     return
   }
 
-  filterMe := jl.ancillary.filtered & (1 << LEVEL_INFO)
   if (jl.ancillary != nil) {
+    filterMe := jl.ancillary.filtered & (1 << LEVEL_INFO)
     if (jl.ancillary.filtered != 0 && filterMe == 0) {
         return
     }
@@ -176,8 +176,8 @@ func (jl *JCLogrus) Warning(s string) () {
     return
   }
 
-  filterMe := jl.ancillary.filtered & (1 << LEVEL_WARNING)
   if (jl.ancillary != nil) {
+    filterMe := jl.ancillary.filtered & (1 << LEVEL_WARNING)
     if (jl.ancillary.filtered != 0 && filterMe == 0) {
         return
     }
@@ -192,8 +192,8 @@ func (jl *JCLogrus) Error(s string) () {
     return
   }
 
-  filterMe := jl.ancillary.filtered & (1 << LEVEL_ERROR)
   if (jl.ancillary != nil) {
+    filterMe := jl.ancillary.filtered & (1 << LEVEL_ERROR)
     if (jl.ancillary.filtered != 0 && filterMe == 0) {
         return
     }
@@ -208,8 +208,8 @@ func (jl *JCLogrus) Fatal(s string) () {
     return
   }
 
-  filterMe := jl.ancillary.filtered & (1 << LEVEL_FATAL)
   if (jl.ancillary != nil) {
+    filterMe := jl.ancillary.filtered & (1 << LEVEL_FATAL)
     if (jl.ancillary.filtered != 0 && filterMe == 0) {
         return
     }
@@ -246,6 +246,7 @@ func CreateLogger(outputType int, outputPath string) (*JCLogrus, error) {
   jcgrus.TimeStamp = readTimeStamp()
   jcgrus.OutputType = outputType
   jcgrus.logrus_ = logrus.New()
+  jcgrus.ancillary = nil
   if (outputType == JCLOG_CONSOLE) {
     jcgrus.OutputPath = ""
     jcgrus.logrus_.SetOutput(os.Stdout)
@@ -267,7 +268,6 @@ func CreateLogger(outputType int, outputPath string) (*JCLogrus, error) {
     jcgrus.logrus_.SetOutput(ff)
     jcgrus.Output = ff
     jcgrus.SetTimeStamp(jcgrus.TimeStamp)
-    jcgrus.ancillary = nil
   }
 
   return &jcgrus, nil
