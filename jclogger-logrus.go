@@ -144,7 +144,7 @@ func (jl *JCLogrus) FuncName() (string) {
 }
 
 // Log levels
-func (jl *JCLogrus) Trace(s string) () {
+func (jl *JCLogrus) Trace(args ...interface{}) () {
 
   if (jl == nil || jl.logrus_ == nil) {
     return
@@ -157,10 +157,10 @@ func (jl *JCLogrus) Trace(s string) () {
     }
   }
 
-  jl.logrus_.Trace(s)
+  jl.logrus_.Trace(args)
 }
 
-func (jl *JCLogrus) Debug(s string) () {
+func (jl *JCLogrus) Debug(args ...interface{}) () {
 
   if (jl == nil || jl.logrus_ == nil) {
     return
@@ -173,10 +173,10 @@ func (jl *JCLogrus) Debug(s string) () {
     }
   }
 
-  jl.logrus_.Debug(s)
+  jl.logrus_.Debug(args)
 }
 
-func (jl *JCLogrus) Info(s string) () {
+func (jl *JCLogrus) Info(args ...interface{}) () {
 
   if (jl == nil || jl.logrus_ == nil) {
     return
@@ -189,10 +189,10 @@ func (jl *JCLogrus) Info(s string) () {
     }
   }
 
-  jl.logrus_.Info(s)
+  jl.logrus_.Info(args)
 }
 
-func (jl *JCLogrus) Warning(s string) () {
+func (jl *JCLogrus) Warning(args ...interface{}) () {
 
   if (jl == nil || jl.logrus_ == nil) {
     return
@@ -205,10 +205,10 @@ func (jl *JCLogrus) Warning(s string) () {
     }
   }
 
-  jl.logrus_.Warning(s)
+  jl.logrus_.Warning(args)
 }
 
-func (jl *JCLogrus) Error(s string) () {
+func (jl *JCLogrus) Error(args ...interface{}) () {
 
   if (jl == nil || jl.logrus_ == nil) {
     return
@@ -221,10 +221,10 @@ func (jl *JCLogrus) Error(s string) () {
     }
   }
 
-  jl.logrus_.Error(s)
+  jl.logrus_.Error(args)
 }
 
-func (jl *JCLogrus) Fatal(s string) () {
+func (jl *JCLogrus) Fatal(args ...interface{}) () {
 
   if (jl == nil || jl.logrus_ == nil) {
     return
@@ -237,7 +237,7 @@ func (jl *JCLogrus) Fatal(s string) () {
     }
   }
 
-  jl.logrus_.Fatal(s)
+  jl.logrus_.Fatal(args)
 }
 
 /* Interface 'stringer' */
