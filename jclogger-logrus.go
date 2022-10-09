@@ -264,13 +264,12 @@ func CreateLogger(outputType int, outputPath string) (*JCLogrus, error) {
       return nil, err
     }
 
-    jcgrus.logrus_.SetLevel(levelConversion(jcgrus.Level))
     jcgrus.logrus_.SetOutput(ff)
     jcgrus.Output = ff
-    jcgrus.SetTimeStamp(jcgrus.TimeStamp)
   }
 
-  fmt.Printf("READ TIME STAMP\n")
+  jcgrus.SetTimeStamp(jcgrus.TimeStamp)
+  jcgrus.logrus_.SetLevel(levelConversion(jcgrus.Level))
   return &jcgrus, nil
 }
 
