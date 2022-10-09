@@ -10,8 +10,10 @@ package jclogger
 import (
   "os"
   "fmt"
+  "path"
   "errors"
   "strings"
+  "runtime"
   "github.com/sirupsen/logrus"
 )
 
@@ -119,6 +121,26 @@ func (jl *JCLogrus) UnFilterLevel(level int) () {
   }
 
   jl.ancillary.filtered &= ^(1 << level)
+}
+
+func (jl *JCLogrus) FuncName() (string) {
+
+  if (jl == nil) {
+    return ""
+  }
+
+  pc, file, _, ok := runtime.Caller(1)
+  if (!ok) {
+    return ""
+  }
+
+  fn := runtime.FuncForPC(pc)
+  if (fn == nil) {
+    return ""
+  }
+
+  aux := fn.Name()
+  return path.Base(file) + "/" + aux[strings.LastIndex(aux, ".") + 1:] + "()"
 }
 
 // Log levels

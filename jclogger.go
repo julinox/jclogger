@@ -41,6 +41,7 @@ type JCLogger interface {
   SetTimeStamp(string) ()
   FilterLevel(int) ()
   UnFilterLevel(int) ()
+  FuncName() (string)
 }
 
 /* Functions */
