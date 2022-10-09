@@ -270,6 +270,7 @@ func CreateLogger(outputType int, outputPath string) (*JCLogrus, error) {
     jcgrus.SetTimeStamp(jcgrus.TimeStamp)
   }
 
+  fmt.Printf("READ TIME STAMP\n")
   return &jcgrus, nil
 }
 
