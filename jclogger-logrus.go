@@ -30,6 +30,7 @@ type jcLogrusAnc struct {
 
 type JCLogrus struct {
   Level int
+  Flags int
   TimeStamp string
   OutputType int
   OutputPath string
@@ -123,13 +124,13 @@ func (jl *JCLogrus) UnFilterLevel(level int) () {
   jl.ancillary.filtered &= ^(1 << level)
 }
 
-func (jl *JCLogrus) FuncName() (string) {
+func (jl *JCLogrus) FuncName(skip int) (string) {
 
   if (jl == nil) {
     return ""
   }
 
-  pc, file, _, ok := runtime.Caller(1)
+  pc, file, _, ok := runtime.Caller(skip)
   if (!ok) {
     return ""
   }
@@ -140,104 +141,38 @@ func (jl *JCLogrus) FuncName() (string) {
   }
 
   aux := fn.Name()
-  return path.Base(file) + "/" + aux[strings.LastIndex(aux, ".") + 1:] + "()"
+  return path.Base(file) + "/" + aux[strings.LastIndex(aux, ".") + 1:]
 }
 
-// Log levels
+/* Log levels */
 func (jl *JCLogrus) Trace(args ...interface{}) () {
 
-  if (jl == nil || jl.logrus_ == nil) {
-    return
-  }
-
-  if (jl.ancillary != nil) {
-    filterMe := jl.ancillary.filtered & (1 << LEVEL_TRACE)
-    if (jl.ancillary.filtered != 0 && filterMe == 0) {
-        return
-    }
-  }
-
-  jl.logrus_.Trace(args)
+  jl.logMe(LEVEL_TRACE, args)
 }
 
 func (jl *JCLogrus) Debug(args ...interface{}) () {
 
-  if (jl == nil || jl.logrus_ == nil) {
-    return
-  }
-
-  if (jl.ancillary != nil) {
-    filterMe := jl.ancillary.filtered & (1 << LEVEL_DEBUG)
-    if (jl.ancillary.filtered != 0 && filterMe == 0) {
-        return
-    }
-  }
-
-  jl.logrus_.Debug(args)
+  jl.logMe(LEVEL_DEBUG, args)
 }
 
 func (jl *JCLogrus) Info(args ...interface{}) () {
 
-  if (jl == nil || jl.logrus_ == nil) {
-    return
-  }
-
-  if (jl.ancillary != nil) {
-    filterMe := jl.ancillary.filtered & (1 << LEVEL_INFO)
-    if (jl.ancillary.filtered != 0 && filterMe == 0) {
-        return
-    }
-  }
-
-  jl.logrus_.Info(args)
+  jl.logMe(LEVEL_INFO, args)
 }
 
 func (jl *JCLogrus) Warning(args ...interface{}) () {
 
-  if (jl == nil || jl.logrus_ == nil) {
-    return
-  }
-
-  if (jl.ancillary != nil) {
-    filterMe := jl.ancillary.filtered & (1 << LEVEL_WARNING)
-    if (jl.ancillary.filtered != 0 && filterMe == 0) {
-        return
-    }
-  }
-
-  jl.logrus_.Warning(args)
+  jl.logMe(LEVEL_WARNING, args)
 }
 
 func (jl *JCLogrus) Error(args ...interface{}) () {
 
-  if (jl == nil || jl.logrus_ == nil) {
-    return
-  }
-
-  if (jl.ancillary != nil) {
-    filterMe := jl.ancillary.filtered & (1 << LEVEL_ERROR)
-    if (jl.ancillary.filtered != 0 && filterMe == 0) {
-        return
-    }
-  }
-
-  jl.logrus_.Error(args)
+  jl.logMe(LEVEL_ERROR, args)
 }
 
 func (jl *JCLogrus) Fatal(args ...interface{}) () {
 
-  if (jl == nil || jl.logrus_ == nil) {
-    return
-  }
-
-  if (jl.ancillary != nil) {
-    filterMe := jl.ancillary.filtered & (1 << LEVEL_FATAL)
-    if (jl.ancillary.filtered != 0 && filterMe == 0) {
-        return
-    }
-  }
-
-  jl.logrus_.Fatal(args)
+  jl.logMe(LEVEL_FATAL, args)
 }
 
 /* Interface 'stringer' */
@@ -286,6 +221,7 @@ func CreateLogger(outputType int, outputPath string) (*JCLogrus, error) {
       return nil, err
     }
 
+    jcgrus.Flags = 0
     jcgrus.logrus_.SetOutput(ff)
     jcgrus.Output = ff
   }
@@ -377,5 +313,60 @@ func levelConversion(level int) (logrus.Level) {
 
     default:
       return logrus.InfoLevel
+  }
+}
+
+func (jl *JCLogrus) logMe(lvl int, args ...interface{}) () {
+
+  /*
+    - Check Filters
+    - Check Flags
+    - Log accordingly
+
+    skip: stack frame skiping:
+      - 0: FuncName()
+      - 1: logme()
+      - 2: logrus respectively level func (error() if lvl == LEVEL_ERROR)
+  */
+
+
+  var skip int = 3
+
+  if (jl == nil || jl.logrus_ == nil) {
+    return
+  }
+
+  if (jl.ancillary != nil) {
+    filterMe := jl.ancillary.filtered & (1 << lvl)
+    if (jl.ancillary.filtered != 0 && filterMe == 0) {
+      return
+    }
+  }
+
+  if (jl.Flags & JCLOG_FLAG_LOCATION == JCLOG_FLAG_LOCATION) {
+    args = append(args, fmt.Sprintf("(%v)", jl.FuncName(skip)))
+  }
+
+  switch (lvl) {
+    case LEVEL_TRACE:
+      jl.logrus_.Trace(args)
+
+    case LEVEL_DEBUG:
+      jl.logrus_.Debug(args)
+
+    case LEVEL_INFO:
+      jl.logrus_.Info(args)
+
+    case LEVEL_WARNING:
+      jl.logrus_.Warn(args)
+
+    case LEVEL_ERROR:
+      jl.logrus_.Error(args)
+
+    case LEVEL_FATAL:
+      jl.logrus_.Fatal(args)
+
+    default:
+      return
   }
 }

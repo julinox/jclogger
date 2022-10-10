@@ -15,6 +15,10 @@ const (
 )
 
 const (
+  JCLOG_FLAG_LOCATION = 1 << 0
+)
+
+const (
   LEVEL_TRACE   = 0
   LEVEL_DEBUG   = 1
   LEVEL_INFO    = 2
