@@ -150,9 +150,19 @@ func (jl *JCLogrus) Trace(args ...interface{}) () {
   jl.logMe(LEVEL_TRACE, args)
 }
 
+func (jl *JCLogrus) TraceSp(separator string, args ...interface{}) () {
+
+  jl.logMe(LEVEL_TRACE, _Joiner(separator, args...))
+}
+
 func (jl *JCLogrus) Debug(args ...interface{}) () {
 
   jl.logMe(LEVEL_DEBUG, args)
+}
+
+func (jl *JCLogrus) DebugSp(separator string, args ...interface{}) () {
+
+  jl.logMe(LEVEL_DEBUG, _Joiner(separator, args...))
 }
 
 func (jl *JCLogrus) Info(args ...interface{}) () {
@@ -160,9 +170,19 @@ func (jl *JCLogrus) Info(args ...interface{}) () {
   jl.logMe(LEVEL_INFO, args)
 }
 
+func (jl *JCLogrus) InfoSp(separator string, args ...interface{}) () {
+
+  jl.logMe(LEVEL_INFO, _Joiner(separator, args...))
+}
+
 func (jl *JCLogrus) Warning(args ...interface{}) () {
 
   jl.logMe(LEVEL_WARNING, args)
+}
+
+func (jl *JCLogrus) WarningSp(separator string, args ...interface{}) () {
+
+  jl.logMe(LEVEL_WARNING, _Joiner(separator, args...))
 }
 
 func (jl *JCLogrus) Error(args ...interface{}) () {
@@ -170,9 +190,19 @@ func (jl *JCLogrus) Error(args ...interface{}) () {
   jl.logMe(LEVEL_ERROR, args)
 }
 
+func (jl *JCLogrus) ErrorSp(separator string, args ...interface{}) () {
+
+  jl.logMe(LEVEL_ERROR, _Joiner(separator, args...))
+}
+
 func (jl *JCLogrus) Fatal(args ...interface{}) () {
 
   jl.logMe(LEVEL_FATAL, args)
+}
+
+func (jl *JCLogrus) FatalSp(separator string, args ...interface{}) () {
+
+  jl.logMe(LEVEL_FATAL, _Joiner(separator, args...))
 }
 
 /* Interface 'stringer' */
@@ -369,4 +399,14 @@ func (jl *JCLogrus) logMe(lvl int, args ...interface{}) () {
     default:
       return
   }
+}
+
+func _Joiner(separator string, args ...interface{}) (string) {
+
+  nn := make([]string, 0)
+    for _, v := range args {
+      nn = append(nn, fmt.Sprintf("%v", v))
+  }
+
+  return fmt.Sprintf(strings.Join(nn, separator))
 }
