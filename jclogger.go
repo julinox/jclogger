@@ -45,7 +45,19 @@ type JCLogger interface {
   SetTimeStamp(string) ()
   FilterLevel(int) ()
   UnFilterLevel(int) ()
-  FuncName() (string)
+  FuncName(int) (string)
+  Trace(...interface{}) ()
+  TraceSp(string, ...interface{}) ()
+  Debug(...interface{}) ()
+  DebugSp(string, ...interface{}) ()
+  Info(...interface{}) ()
+  InfoSp(string, ...interface{}) ()
+  Warning(...interface{}) ()
+  WarningSp(string, ...interface{}) ()
+  Error(...interface{}) ()
+  ErrorSp(string, ...interface{}) ()
+  Fatal(...interface{}) ()
+  FatalSp(string, ...interface{}) ()
 }
 
 /* Functions */

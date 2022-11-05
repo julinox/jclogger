@@ -218,7 +218,7 @@ func (jl *JCLogrus) String() (string) {
 }
 
 /* Functions */
-func CreateLogger(outputType int, outputPath string) (*JCLogrus, error) {
+func NewLoggerLogrus(outputType int, outputPath string) (*JCLogrus, error) {
 
   /*
     Creates a new logger. Level and timestamp will be set to
@@ -358,7 +358,6 @@ func (jl *JCLogrus) logMe(lvl int, args ...interface{}) () {
       - 1: logme()
       - 2: logrus respectively level func (error() if lvl == LEVEL_ERROR)
   */
-
 
   var skip int = 3
 
