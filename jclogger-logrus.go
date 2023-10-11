@@ -70,6 +70,16 @@ func (jl *JCLogrus) SetTimeStamp(ts string) () {
   jl.logrus_.SetFormatter(&tf)
 }
 
+func (jl *JCLogrus) GetOutput() interface{} {
+
+
+  if (jl == nil) {
+    return nil
+  }
+
+  return jl.Output
+}
+
 func (jl *JCLogrus) Close() () {
 
   /*

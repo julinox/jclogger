@@ -45,6 +45,7 @@ type JCLogger interface {
   SetTimeStamp(string) ()
   FilterLevel(int) ()
   UnFilterLevel(int) ()
+  GetOutput() (interface{})
   FuncName(int) (string)
   Trace(...interface{}) ()
   TraceSp(string, ...interface{}) ()
