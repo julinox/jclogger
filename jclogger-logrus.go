@@ -237,7 +237,9 @@ func NewLoggerLogrus(outputType int, outputPath string) (*JCLogrus, error) {
   if (outputType == JCLOG_CONSOLE) {
     jcgrus.OutputPath = ""
     jcgrus.logrus_.SetOutput(os.Stdout)
-    jcgrus.Output = nil
+    //jcgrus.Output = nil
+    // Yes this?
+    jcgrus.Output = jcgrus.logrus_.Out
 
   } else {
     if (outputPath == "") {
